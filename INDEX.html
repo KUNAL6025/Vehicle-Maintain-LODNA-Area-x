@@ -1,0 +1,433 @@
+INDEX.HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEV GROUP NTST LODNA AREA-X</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body class="bg-gray-100 p-4">
+
+  <div class="container">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+      <h1 class="text-4xl font-extrabold text-indigo-700 mb-4 md:mb-0">DEV GROUP NTST LODNA AREA-X</h1>
+      <div class="flex items-center space-x-2">
+        <input type="text" id="search-bar" placeholder="Search by Vehicle/Operator..." class="p-2 border border-gray-300 rounded-md w-48 md:w-64">
+        <button id="view-data-btn" class="btn-primary px-4 py-2 text-sm">View Data</button>
+      </div>
+    </div>
+    <p class="text-center text-gray-600 mb-8">Enter daily shift details to keep a digital record, saved directly on your device.</p>
+
+    <form id="log-form" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label for="operator">Operator Name</label>
+          <input type="text" id="operator" placeholder="e.g., Kunal" required>
+        </div>
+        <div class="form-group">
+          <label for="vehicle">Vehicle Number</label>
+          <input type="text" id="vehicle" placeholder="e.g., DT-01" required>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label for="registration-no">Vehicle Registration No.</label>
+          <input type="text" id="registration-no" placeholder="e.g., JH05 AT 1234">
+        </div>
+        <div class="form-group">
+          <label for="chassis-no">Chassis Number</label>
+          <input type="text" id="chassis-no" placeholder="e.g., ABC123XYZ456">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label for="shift-start">Shift Start Time</label>
+          <input type="time" id="shift-start" required>
+        </div>
+        <div class="form-group">
+          <label for="shift-end">Shift End Time</label>
+          <input type="time" id="shift-end" required>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label for="opening-km">Opening KM</label>
+          <input type="number" id="opening-km" placeholder="e.g., 12345" required>
+        </div>
+        <div class="form-group">
+          <label for="closing-km">Closing KM</label>
+          <input type="number" id="closing-km" placeholder="e.g., 12450" required>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="form-group">
+          <label for="opening-hmr">Opening HMR</label>
+          <input type="number" id="opening-hmr" placeholder="e.g., 1200" required>
+        </div>
+        <div class="form-group">
+          <label for="closing-hmr">Closing HMR</label>
+          <input type="number" id="closing-hmr" placeholder="e.g., 1215" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="issues">Issues / Comments</label>
+        <textarea id="issues" rows="3" placeholder="Any vehicle issues, notes, or special circumstances..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Parts Required</label>
+        <table id="parts-required-table" class="data-table mt-2">
+          <thead>
+            <tr>
+              <th>S.No.</th>
+              <th>Part Name</th>
+              <th>Part No.</th>
+              <th>Quantity</th>
+              <th>Availability</th>
+              <th>Order Date</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            </tbody>
+        </table>
+        <div class="flex justify-end mt-2">
+            <button type="button" id="add-part-btn" class="btn-secondary px-4 py-2 text-sm">+ Add Part</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary w-full md:w-auto">Submit Log</button>
+    </form>
+
+    <hr class="my-8 border-t border-gray-200">
+
+    <h2 id="recent-logs-heading" class="text-2xl font-bold text-center mb-6 text-gray-700">Recent Log Entries</h2>
+    <div id="log-entries" class="space-y-4"></div>
+
+    <div id="table-view" class="hidden mt-8">
+      <h2 class="text-2xl font-bold text-center mb-6 text-gray-700">All Log Entries (Table View)</h2>
+      <div class="flex justify-center space-x-4 mb-4">
+        <button id="export-excel-btn" class="btn-secondary">Export to Excel</button>
+        <button id="export-pdf-btn" class="btn-secondary">Export to PDF</button>
+        <button id="back-to-form-btn" class="btn-secondary">Back to Form</button>
+      </div>
+      <div class="table-container">
+        <table id="data-table" class="data-table">
+          <thead>
+            <tr>
+              <th>Date/Time</th>
+              <th>Operator</th>
+              <th>Vehicle No.</th>
+              <th>Reg. No.</th>
+              <th>Chassis No.</th>
+              <th>Shift Start</th>
+              <th>Shift End</th>
+              <th>Opening KM</th>
+              <th>Closing KM</th>
+              <th>Total KM</th>
+              <th>Opening HMR</th>
+              <th>Closing HMR</th>
+              <th>Total HMR</th>
+              <th>Issues</th>
+              <th>Parts Required</th>
+            </tr>
+          </thead>
+          <tbody>
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="myModal" class="modal">
+    <div class="modal-content rounded-lg shadow-xl">
+      <h4 class="text-xl font-bold mb-4">Message</h4>
+      <p id="modal-message" class="mb-6"></p>
+      <button id="modal-ok-btn" class="btn-primary w-full md:w-auto">OK</button>
+    </div>
+  </div>
+
+  <script>
+    // Authentication check before loading the app
+    if (localStorage.getItem('isAuthenticated') !== 'true') {
+        window.location.href = 'login.html';
+    }
+
+    // Rest of your JavaScript code from the previous response goes here
+    document.addEventListener("DOMContentLoaded", () => {
+      const logForm = document.getElementById('log-form');
+      const logEntriesContainer = document.getElementById('log-entries');
+      const modal = document.getElementById('myModal');
+      const modalMessage = document.getElementById('modal-message');
+      const modalOkBtn = document.getElementById('modal-ok-btn');
+      const viewDataBtn = document.getElementById('view-data-btn');
+      const tableView = document.getElementById('table-view');
+      const dataTableBody = document.querySelector('#data-table tbody');
+      const exportExcelBtn = document.getElementById('export-excel-btn');
+      const exportPdfBtn = document.getElementById('export-pdf-btn');
+      const backToFormBtn = document.getElementById('back-to-form-btn');
+      const recentLogsHeading = document.getElementById('recent-logs-heading');
+      const searchBar = document.getElementById('search-bar');
+      const addPartBtn = document.getElementById('add-part-btn');
+      const partsTableBody = document.querySelector('#parts-required-table tbody');
+
+      let partCounter = 1;
+      let editingIndex = -1; // -1 means no log is being edited
+
+      function showModal(message) {
+        modalMessage.textContent = message;
+        modal.style.display = "flex";
+      }
+
+      modalOkBtn.onclick = () => { modal.style.display = "none"; };
+      window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; };
+
+      function getLogs() {
+        const logs = localStorage.getItem('dumpTruckLogs');
+        return logs ? JSON.parse(logs) : [];
+      }
+      function saveLogs(logs) {
+        localStorage.setItem('dumpTruckLogs', JSON.stringify(logs));
+      }
+
+      function renderLogs(logsToRender = null) {
+        const logs = logsToRender || getLogs().sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        logEntriesContainer.innerHTML = '';
+        if (logs.length === 0) {
+          logEntriesContainer.innerHTML = '<p class="text-center text-gray-500">No log entries yet. Add one using the form above!</p>';
+          return;
+        }
+
+        logs.forEach((log, index) => {
+          const partsList = log.partsRequired.map(part => `<li>${part.name} (Part No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Availability: ${part.availability}, Status: ${part.status}, Remarks: ${part.remarks || 'N/A'}</li>`).join('');
+          
+          const entry = document.createElement('div');
+          entry.className = 'log-entry';
+          entry.innerHTML = `
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="text-blue-700">${log.operator} - ${log.vehicle}</h3>
+              <span class="text-xs text-gray-500">${new Date(log.timestamp).toLocaleString()}</span>
+            </div>
+            <p><strong>Registration No:</strong> ${log.registrationNo || 'N/A'}</p>
+            <p><strong>Chassis No:</strong> ${log.chassisNo || 'N/A'}</p>
+            <p><strong>Shift Start:</strong> ${log.shiftStart}</p>
+            <p><strong>Shift End:</strong> ${log.shiftEnd}</p>
+            <p><strong>Opening KM:</strong> ${log.openingKm}</p>
+            <p><strong>Closing KM:</strong> ${log.closingKm}</p>
+            <p><strong>Total KM:</strong> ${log.totalKm}</p>
+            <p><strong>Opening HMR:</strong> ${log.openingHmr}</p>
+            <p><strong>Closing HMR:</strong> ${log.closingHmr}</p>
+            <p><strong>Total HMR:</strong> ${log.totalHmr}</p>
+            <p><strong>Issues:</strong> ${log.issues || 'No issues reported.'}</p>
+            <p><strong>Parts Required:</strong> ${partsList ? `<ul>${partsList}</ul>` : 'None.'}</p>
+            <div class="flex space-x-2 mt-4">
+                <button class="btn-edit" data-index="${index}">Edit Log</button>
+            </div>
+          `;
+          logEntriesContainer.appendChild(entry);
+        });
+
+        document.querySelectorAll('.btn-edit').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const index = e.target.dataset.index;
+                const logs = getLogs();
+                const logToEdit = logs[index];
+                const timeSinceEntry = (new Date() - new Date(logToEdit.timestamp)) / 1000 / 60;
+
+                if (timeSinceEntry > 30) {
+                    showModal("Editing is only allowed for the first 30 minutes after submission.");
+                    return;
+                }
+                
+                document.getElementById('operator').value = logToEdit.operator;
+                document.getElementById('vehicle').value = logToEdit.vehicle;
+                document.getElementById('registration-no').value = logToEdit.registrationNo;
+                document.getElementById('chassis-no').value = logToEdit.chassisNo;
+                document.getElementById('shift-start').value = logToEdit.shiftStart;
+                document.getElementById('shift-end').value = logToEdit.shiftEnd;
+                document.getElementById('opening-km').value = logToEdit.openingKm;
+                document.getElementById('closing-km').value = logToEdit.closingKm;
+                document.getElementById('opening-hmr').value = logToEdit.openingHmr;
+                document.getElementById('closing-hmr').value = logToEdit.closingHmr;
+                document.getElementById('issues').value = logToEdit.issues;
+                
+                partsTableBody.innerHTML = '';
+                partCounter = 1;
+                logToEdit.partsRequired.forEach(part => {
+                    const newRow = partsTableBody.insertRow();
+                    newRow.innerHTML = `
+                        <td>${partCounter++}.</td>
+                        <td><input type="text" class="part-name-input p-1 border rounded-md w-full" value="${part.name}" required></td>
+                        <td><input type="text" class="part-partno-input p-1 border rounded-md w-full" value="${part.partNo || ''}"></td>
+                        <td><input type="number" class="part-quantity-input p-1 border rounded-md w-full" value="${part.quantity}" min="1" required></td>
+                        <td>
+                            <select class="part-availability-input p-1 border rounded-md w-full">
+                                <option value="Available" ${part.availability === 'Available' ? 'selected' : ''}>Available</option>
+                                <option value="Not Available" ${part.availability === 'Not Available' ? 'selected' : ''}>Not Available</option>
+                            </select>
+                        </td>
+                        <td><input type="date" class="part-orderdate-input p-1 border rounded-md w-full" value="${part.orderDate || ''}"></td>
+                        <td>
+                            <select class="part-status-input p-1 border rounded-md w-full">
+                                <option value="Pending" ${part.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Received" ${part.status === 'Received' ? 'selected' : ''}>Received</option>
+                            </select>
+                        </td>
+                        <td><input type="text" class="part-remarks-input p-1 border rounded-md w-full" value="${part.remarks || ''}"></td>
+                    `;
+                });
+
+                editingIndex = index;
+                showModal("You can now edit the log. Submit the form to save changes.");
+            });
+        });
+      }
+
+      function renderTable(logsToRender = null) {
+        const logs = logsToRender || getLogs().sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
+        dataTableBody.innerHTML = '';
+        if (logs.length === 0) {
+          dataTableBody.innerHTML = '<tr><td colspan="15" class="text-center text-gray-500">No log entries to display.</td></tr>';
+          return;
+        }
+        logs.forEach(log => {
+          const partsText = log.partsRequired.map(part => `Part: ${part.name} (Part No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Status: ${part.status}`).join('; ');
+          const row = dataTableBody.insertRow();
+          row.innerHTML = `
+            <td>${new Date(log.timestamp).toLocaleString()}</td>
+            <td>${log.operator}</td>
+            <td>${log.vehicle}</td>
+            <td>${log.registrationNo || ''}</td>
+            <td>${log.chassisNo || ''}</td>
+            <td>${log.shiftStart}</td>
+            <td>${log.shiftEnd}</td>
+            <td>${log.openingKm}</td>
+            <td>${log.closingKm}</td>
+            <td>${log.totalKm}</td>
+            <td>${log.openingHmr}</td>
+            <td>${log.closingHmr}</td>
+            <td>${log.totalHmr}</td>
+            <td>${log.issues || ''}</td>
+            <td>${partsText || ''}</td>
+          `;
+        });
+      }
+
+      addPartBtn.addEventListener('click', () => {
+          const newRow = partsTableBody.insertRow();
+          newRow.innerHTML = `
+              <td>${partCounter++}.</td>
+              <td><input type="text" class="part-name-input p-1 border rounded-md w-full" placeholder="Part Name" required></td>
+              <td><input type="text" class="part-partno-input p-1 border rounded-md w-full" placeholder="Part No."></td>
+              <td><input type="number" class="part-quantity-input p-1 border rounded-md w-full" value="1" min="1" required></td>
+              <td>
+                <select class="part-availability-input p-1 border rounded-md w-full">
+                  <option value="Available">Available</option>
+                  <option value="Not Available" selected>Not Available</option>
+                </select>
+              </td>
+              <td><input type="date" class="part-orderdate-input p-1 border rounded-md w-full"></td>
+              <td>
+                <select class="part-status-input p-1 border rounded-md w-full">
+                  <option value="Pending" selected>Pending</option>
+                  <option value="Received">Received</option>
+                </select>
+              </td>
+              <td><input type="text" class="part-remarks-input p-1 border rounded-md w-full" placeholder="Remarks"></td>
+          `;
+      });
+      
+      logForm.addEventListener('reset', () => {
+          partsTableBody.innerHTML = '';
+          partCounter = 1;
+          editingIndex = -1;
+      });
+
+      viewDataBtn.addEventListener('click', () => {
+        logForm.classList.add('hidden');
+        recentLogsHeading.classList.add('hidden');
+        logEntriesContainer.classList.add('hidden');
+        tableView.classList.remove('hidden');
+        viewDataBtn.classList.add('hidden');
+        searchBar.classList.add('hidden');
+        renderTable();
+      });
+
+      backToFormBtn.addEventListener('click', () => {
+        logForm.classList.remove('hidden');
+        recentLogsHeading.classList.remove('hidden');
+        logEntriesContainer.classList.remove('hidden');
+        tableView.classList.add('hidden');
+        viewDataBtn.classList.remove('hidden');
+        searchBar.classList.remove('hidden');
+        searchBar.value = '';
+        renderLogs();
+      });
+
+      searchBar.addEventListener('keyup', () => {
+        const query = searchBar.value.toLowerCase();
+        const logs = getLogs();
+        const filteredLogs = logs.filter(log =>
+          log.operator.toLowerCase().includes(query) ||
+          log.vehicle.toLowerCase().includes(query) ||
+          (log.registrationNo && log.registrationNo.toLowerCase().includes(query)) ||
+          (log.chassisNo && log.chassisNo.toLowerCase().includes(query))
+        );
+        renderLogs(filteredLogs);
+      });
+
+      exportExcelBtn.addEventListener('click', () => {
+        const logs = getLogs().sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
+        if (logs.length === 0) {
+          showModal("No data to export to Excel.");
+          return;
+        }
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Date/Time,Operator,Vehicle,Registration No,Chassis No,Shift Start,Shift End,Opening KM,Closing KM,Total KM,Opening HMR,Closing HMR,Total HMR,Issues,Parts Required\n";
+        logs.forEach(log => {
+          const partsText = log.partsRequired.map(part => `${part.name} (Part No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Status: ${part.status}`).join('; ');
+          let row = [
+            `"${new Date(log.timestamp).toLocaleString()}"`,
+            `"${log.operator}"`,
+            `"${log.vehicle}"`,
+            `"${log.registrationNo || ''}"`,
+            `"${log.chassisNo || ''}"`,
+            `"${log.shiftStart}"`,
+            `"${log.shiftEnd}"`,
+            log.openingKm,
+            log.closingKm,
+            log.totalKm,
+            log.openingHmr,
+            log.closingHmr,
+            log.totalHmr,
+            `"${log.issues ? log.issues.replace(/"/g, '""') : ''}"`,
+            `"${partsText.replace(/"/g, '""')}"`
+          ];
+          csvContent += row.join(",") + "\n";
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "dump_truck_logs.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showModal("Data exported to Excel (CSV) successfully!");
+      });
+
+      exportPdfBtn.addEventListener('click', () => {
+        const logs = getLogs().sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
+        if (logs.length === 0) {
+          showModal("No data to export to PDF.");
+          return;
+        }
+        const { jsPDF 
