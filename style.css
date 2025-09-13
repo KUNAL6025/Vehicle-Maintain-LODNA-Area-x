@@ -1,13 +1,11 @@
 style.css
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-
 body { 
     font-family: 'Inter', sans-serif; 
     background-color: #e2e8f0; 
     color: #333; 
     transition: background-color 0.3s ease;
 }
-
 .container { 
     max-width: 900px; 
     margin: 2rem auto; 
@@ -17,11 +15,9 @@ body {
     box-shadow: 0 10px 15px rgba(0,0,0,0.1);
     border: 1px solid #cbd5e0;
 }
-
 .form-group { 
     margin-bottom: 1.5rem; 
 }
-
 label { 
     display: block; 
     margin-bottom: 0.6rem; 
@@ -30,7 +26,6 @@ label {
     text-transform: uppercase;
     font-size: 0.875rem;
 }
-
 input, textarea, select { 
     width: 100%; 
     padding: 0.85rem; 
@@ -40,14 +35,12 @@ input, textarea, select {
     transition: all 0.2s ease-in-out; 
     font-size: 1rem;
 }
-
 input:focus, textarea:focus, select:focus { 
     outline: none; 
     border-color: #4c51bf;
     box-shadow: 0 0 0 3px rgba(76,81,191,0.2);
     background-color: #fff;
 }
-
 .btn-primary { 
     background-color: #4c51bf; 
     color: #fff; 
@@ -61,12 +54,10 @@ input:focus, textarea:focus, select:focus {
     letter-spacing: 0.05em;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-
 .btn-primary:hover { 
     background-color: #434190; 
     box-shadow: 0 6px 8px rgba(0,0,0,0.15);
 }
-
 .btn-secondary { 
     background-color: #4a5568; 
     color: #fff; 
@@ -80,12 +71,10 @@ input:focus, textarea:focus, select:focus {
     letter-spacing: 0.05em;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-
 .btn-secondary:hover { 
     background-color: #2d3748; 
     box-shadow: 0 6px 8px rgba(0,0,0,0.15);
 }
-
 .btn-edit { 
     background-color: #2563eb; 
     color: #fff; 
@@ -97,11 +86,9 @@ input:focus, textarea:focus, select:focus {
     font-size: 0.875rem;
     border: none;
 }
-
 .btn-edit:hover { 
     background-color: #1d4ed8; 
 }
-
 .log-entry { 
     border: 1px solid #e2e8f0; 
     background-color: #f7fafc; 
@@ -110,7 +97,6 @@ input:focus, textarea:focus, select:focus {
     border-radius: 12px; 
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
-
 .modal { 
     display: none; 
     position: fixed; 
@@ -123,7 +109,6 @@ input:focus, textarea:focus, select:focus {
     justify-content: center; 
     align-items: center;
 }
-
 .modal-content { 
     background-color: #fff; 
     padding: 2.5rem; 
@@ -133,12 +118,10 @@ input:focus, textarea:focus, select:focus {
     text-align: center;
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
-
 .table-container { 
     overflow-x: auto; 
     margin-top: 2rem; 
 }
-
 .data-table { 
     width: 100%; 
     border-collapse: collapse; 
@@ -146,14 +129,12 @@ input:focus, textarea:focus, select:focus {
     border-radius: 8px;
     overflow: hidden;
 }
-
 .data-table th, .data-table td { 
     border: 1px solid #e2e8f0; 
     padding: 1rem; 
     text-align: left; 
     font-size: 0.95rem;
 }
-
 .data-table th { 
     background-color: #e0e7ff; 
     font-weight: 700; 
@@ -161,12 +142,28 @@ input:focus, textarea:focus, select:focus {
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
-
 .data-table tr:nth-child(even) { 
     background-color: #f7fafc; 
 }
-
 #parts-required-table th, #parts-required-table td { 
     padding: 0.75rem; 
     font-size: 0.875rem;
+}
+.site-link {
+    display: block;
+    background-color: #f0f4f8;
+    color: #4a5568;
+    padding: 1.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.site-link:hover {
+    background-color: #e2e8f0;
+    color: #2d3748;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }

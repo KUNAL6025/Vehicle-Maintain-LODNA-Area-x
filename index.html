@@ -1,4 +1,4 @@
-Index.html
+index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,34 +9,6 @@ Index.html
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    <style>
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        .data-table th, .data-table td {
-            border: 1px solid #e2e8f0;
-            padding: 8px;
-            text-align: left;
-        }
-        .data-table th {
-            background-color: #4f46e5;
-            color: white;
-        }
-        .data-table tr:nth-child(even) {
-            background-color: #f7fafc;
-        }
-        .data-table tr:hover {
-            background-color: #ebf8ff;
-        }
-        .table-container {
-            overflow-x: auto;
-        }
-        .logo-header {
-            width: 80px;
-        }
-    </style>
 </head>
 <body class="bg-gray-100 p-4">
     <script>
@@ -49,11 +21,9 @@ Index.html
     
     <div class="container">
       <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-        <div class="flex items-center mb-4 md:mb-0">
-          <img src="41720.jpg" alt="DEV GROUP DHANBAD Logo" class="logo-header mr-4">
-          <h1 class="text-4xl font-extrabold text-indigo-700">DEV GROUP NTST LODNA AREA-X</h1>
-        </div>
+        <h1 id="site-title" class="text-4xl font-extrabold text-indigo-700 mb-4 md:mb-0"></h1>
         <div class="flex items-center space-x-2">
+          <input type="text" id="search-bar" placeholder="Search by Vehicle/Operator..." class="p-2 border border-gray-300 rounded-md w-48 md:w-64">
           <button id="view-data-btn" class="btn-primary px-4 py-2 text-sm">View Data</button>
         </div>
       </div>
@@ -84,18 +54,13 @@ Index.html
   
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="form-group">
-            <label for="shift-start">Shift Start Time (AM/PM)</label>
+            <label for="shift-start">Shift Start Time</label>
             <input type="time" id="shift-start" required>
           </div>
           <div class="form-group">
-            <label for="shift-end">Shift End Time (AM/PM)</label>
+            <label for="shift-end">Shift End Time</label>
             <input type="time" id="shift-end" required>
           </div>
-        </div>
-        
-        <div class="form-group hidden" id="total-hours-container">
-            <label>Total Shift Duration</label>
-            <input type="text" id="total-hours" class="font-bold text-lg text-indigo-700" readonly>
         </div>
   
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -127,24 +92,22 @@ Index.html
   
         <div class="form-group">
           <label>Parts Required</label>
-          <div class="table-container">
-            <table id="parts-required-table" class="data-table mt-2">
-              <thead>
-                <tr>
-                  <th class="w-10">S.No.</th>
-                  <th class="w-48">Part Name</th>
-                  <th class="w-32">Part No.</th>
-                  <th class="w-16">QTY</th>
-                  <th class="w-24">Parts Availability</th>
-                  <th class="w-24">Order Date</th>
-                  <th class="w-24">Parts Status</th>
-                  <th class="w-48">Remarks</th>
-                </tr>
-              </thead>
-              <tbody>
+          <table id="parts-required-table" class="data-table mt-2">
+            <thead>
+              <tr>
+                <th>S.No.</th>
+                <th>Part Name</th>
+                <th>Part No.</th>
+                <th>Quantity</th>
+                <th>Availability</th>
+                <th>Order Date</th>
+                <th>Status</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody>
               </tbody>
-            </table>
-          </div>
+          </table>
           <div class="flex justify-end mt-2">
               <button type="button" id="add-part-btn" class="btn-secondary px-4 py-2 text-sm">+ Add Part</button>
           </div>
@@ -160,9 +123,6 @@ Index.html
   
       <div id="table-view" class="hidden mt-8">
         <h2 class="text-2xl font-bold text-center mb-6 text-gray-700">All Log Entries (Table View)</h2>
-        <div class="flex items-center space-x-2 mb-4 justify-center">
-            <input type="text" id="search-bar" placeholder="Search by Vehicle/Operator..." class="p-2 border border-gray-300 rounded-md w-48 md:w-64">
-        </div>
         <div class="flex justify-center space-x-4 mb-4">
           <button id="export-excel-btn" class="btn-secondary">Export to Excel</button>
           <button id="export-pdf-btn" class="btn-secondary">Export to PDF</button>
@@ -179,13 +139,14 @@ Index.html
                 <th>Chassis No.</th>
                 <th>Shift Start</th>
                 <th>Shift End</th>
-                <th>Total Hrs</th>
                 <th>Opening KM</th>
                 <th>Closing KM</th>
                 <th>Total KM</th>
                 <th>Opening HMR</th>
                 <th>Closing HMR</th>
                 <th>Total HMR</th>
+                <th>Issues</th>
+                <th>Parts Required</th>
               </tr>
             </thead>
             <tbody>
@@ -205,6 +166,14 @@ Index.html
   
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const siteName = urlParams.get('site');
+        
+        if (siteName) {
+            document.getElementById('site-title').textContent = `${siteName} Data Entry`;
+        } else {
+            document.getElementById('site-title').textContent = "Please select a site from the menu.";
+        }
         const logForm = document.getElementById('log-form');
         const logEntriesContainer = document.getElementById('log-entries');
         const modal = document.getElementById('myModal');
@@ -220,13 +189,10 @@ Index.html
         const searchBar = document.getElementById('search-bar');
         const addPartBtn = document.getElementById('add-part-btn');
         const partsTableBody = document.querySelector('#parts-required-table tbody');
-        const shiftStartInput = document.getElementById('shift-start');
-        const shiftEndInput = document.getElementById('shift-end');
-        const totalHoursInput = document.getElementById('total-hours');
-        const totalHoursContainer = document.getElementById('total-hours-container');
   
         let partCounter = 1;
         let editingIndex = -1;
+        const storageKey = `dumpTruckLogs-${siteName}`;
   
         function showModal(message) {
           modalMessage.textContent = message;
@@ -237,38 +203,12 @@ Index.html
         window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; };
   
         function getLogs() {
-          const logs = localStorage.getItem('dumpTruckLogs');
+          const logs = localStorage.getItem(storageKey);
           return logs ? JSON.parse(logs) : [];
         }
         function saveLogs(logs) {
-          localStorage.setItem('dumpTruckLogs', JSON.stringify(logs));
+          localStorage.setItem(storageKey, JSON.stringify(logs));
         }
-        function calculateTotalHours() {
-            const start = shiftStartInput.value;
-            const end = shiftEndInput.value;
-            if (start && end) {
-                const [startHour, startMinute] = start.split(':').map(Number);
-                const [endHour, endMinute] = end.split(':').map(Number);
-                const startDate = new Date();
-                startDate.setHours(startHour, startMinute, 0);
-                const endDate = new Date();
-                endDate.setHours(endHour, endMinute, 0);
-                
-                if (endDate < startDate) {
-                    endDate.setDate(endDate.getDate() + 1);
-                }
-                const diff = endDate - startDate;
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                totalHoursInput.value = `${hours} hours and ${minutes} minutes`;
-                totalHoursContainer.classList.remove('hidden');
-            } else {
-                totalHoursContainer.classList.add('hidden');
-            }
-        }
-        
-        shiftStartInput.addEventListener('input', calculateTotalHours);
-        shiftEndInput.addEventListener('input', calculateTotalHours);
   
         function renderLogs(logsToRender = null) {
           const logs = logsToRender || getLogs().sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -279,102 +219,35 @@ Index.html
           }
   
           logs.forEach((log, index) => {
-            const entry = document.createElement('div');
-            entry.className = 'log-entry bg-white p-6 rounded-lg shadow-md mb-6';
+            const partsList = log.partsRequired.map(part => `<li>${part.name} (Part No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Availability: ${part.availability}, Status: ${part.status}, Remarks: ${part.remarks || 'N/A'}</li>`).join('');
             
-            let partsTableHTML = '';
-            if (log.partsRequired && log.partsRequired.length > 0) {
-                partsTableHTML = `
-                    <div class="mt-4">
-                        <h4 class="font-bold text-gray-700">Parts Required:</h4>
-                        <div class="table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th class="w-10">S.No.</th>
-                                        <th class="w-48">Part Name</th>
-                                        <th class="w-32">Part No.</th>
-                                        <th class="w-16">QTY</th>
-                                        <th class="w-24">Parts Availability</th>
-                                        <th class="w-24">Order Date</th>
-                                        <th class="w-24">Parts Status</th>
-                                        <th class="w-48">Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${log.partsRequired.map((part, partIndex) => `
-                                        <tr>
-                                            <td>${partIndex + 1}.</td>
-                                            <td>${part.name}</td>
-                                            <td>${part.partNo || 'N/A'}</td>
-                                            <td>${part.quantity}</td>
-                                            <td>${part.availability}</td>
-                                            <td>${part.orderDate || 'N/A'}</td>
-                                            <td>${part.status}</td>
-                                            <td>${part.remarks || 'N/A'}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
-            } else {
-                partsTableHTML = `<p class="mt-2 text-sm text-gray-500">No parts required.</p>`;
-            }
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
             entry.innerHTML = `
-              <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl font-bold text-blue-700">${log.operator} - ${log.vehicle}</h3>
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="text-blue-700">${log.operator} - ${log.vehicle}</h3>
                 <span class="text-xs text-gray-500">${new Date(log.timestamp).toLocaleString()}</span>
               </div>
-              
-              <div class="table-container mb-4">
-                  <table class="data-table">
-                      <thead>
-                          <tr>
-                              <th>Reg. No.</th>
-                              <th>Chassis No.</th>
-                              <th>Shift Start</th>
-                              <th>Shift End</th>
-                              <th>Total Hrs</th>
-                              <th>Open KM</th>
-                              <th>Close KM</th>
-                              <th>Total KM</th>
-                              <th>Open HMR</th>
-                              <th>Close HMR</th>
-                              <th>Total HMR</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr>
-                              <td>${log.registrationNo || 'N/A'}</td>
-                              <td>${log.chassisNo || 'N/A'}</td>
-                              <td>${log.shiftStart}</td>
-                              <td>${log.shiftEnd}</td>
-                              <td>${log.totalHours}</td>
-                              <td>${log.openingKm}</td>
-                              <td>${log.closingKm}</td>
-                              <td>${log.totalKm}</td>
-                              <td>${log.openingHmr}</td>
-                              <td>${log.closingHmr}</td>
-                              <td>${log.totalHmr}</td>
-                          </tr>
-                      </tbody>
-                  </table>
-              </div>
-              <div class="mt-4">
-                  <h4 class="font-bold text-gray-700">Issues / Comments:</h4>
-                  <p class="mt-2">${log.issues || 'No issues reported.'}</p>
-              </div>
-              ${partsTableHTML}
-              <div class="flex space-x-2 mt-6">
-                  <button class="btn-primary px-4 py-2 text-sm" data-index="${index}">Edit Log</button>
+              <p><strong>Registration No:</strong> ${log.registrationNo || 'N/A'}</p>
+              <p><strong>Chassis No:</strong> ${log.chassisNo || 'N/A'}</p>
+              <p><strong>Shift Start:</strong> ${log.shiftStart}</p>
+              <p><strong>Shift End:</strong> ${log.shiftEnd}</p>
+              <p><strong>Opening KM:</strong> ${log.openingKm}</p>
+              <p><strong>Closing KM:</strong> ${log.closingKm}</p>
+              <p><strong>Total KM:</strong> ${log.totalKm}</p>
+              <p><strong>Opening HMR:</strong> ${log.openingHmr}</p>
+              <p><strong>Closing HMR:</strong> ${log.closingHmr}</p>
+              <p><strong>Total HMR:</strong> ${log.totalHmr}</p>
+              <p><strong>Issues:</strong> ${log.issues || 'No issues reported.'}</p>
+              <p><strong>Parts Required:</strong> ${partsList ? `<ul>${partsList}</ul>` : 'None.'}</p>
+              <div class="flex space-x-2 mt-4">
+                  <button class="btn-edit" data-index="${index}">Edit Log</button>
               </div>
             `;
             logEntriesContainer.appendChild(entry);
           });
   
-          document.querySelectorAll('.btn-primary').forEach(button => {
+          document.querySelectorAll('.btn-edit').forEach(button => {
               button.addEventListener('click', (e) => {
                   const index = e.target.dataset.index;
                   const logs = getLogs();
@@ -423,7 +296,7 @@ Index.html
                           <td><input type="text" class="part-remarks-input p-1 border rounded-md w-full" value="${part.remarks || ''}"></td>
                       `;
                   });
-                  calculateTotalHours();
+  
                   editingIndex = index;
                   showModal("You can now edit the log. Submit the form to save changes.");
               });
@@ -434,10 +307,11 @@ Index.html
           const logs = logsToRender || getLogs().sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp));
           dataTableBody.innerHTML = '';
           if (logs.length === 0) {
-            dataTableBody.innerHTML = '<tr><td colspan="14" class="text-center text-gray-500">No log entries to display.</td></tr>';
+            dataTableBody.innerHTML = '<tr><td colspan="15" class="text-center text-gray-500">No log entries to display.</td></tr>';
             return;
           }
           logs.forEach(log => {
+            const partsText = log.partsRequired.map(part => `Part: ${part.name} (Part No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Status: ${part.status}`).join('; ');
             const row = dataTableBody.insertRow();
             row.innerHTML = `
               <td>${new Date(log.timestamp).toLocaleString()}</td>
@@ -447,53 +321,15 @@ Index.html
               <td>${log.chassisNo || ''}</td>
               <td>${log.shiftStart}</td>
               <td>${log.shiftEnd}</td>
-              <td>${log.totalHours}</td>
               <td>${log.openingKm}</td>
               <td>${log.closingKm}</td>
               <td>${log.totalKm}</td>
               <td>${log.openingHmr}</td>
               <td>${log.closingHmr}</td>
               <td>${log.totalHmr}</td>
+              <td>${log.issues || ''}</td>
+              <td>${partsText || ''}</td>
             `;
-            
-            const issuesRow = dataTableBody.insertRow();
-            issuesRow.innerHTML = `<td colspan="14" class="bg-gray-50 text-gray-700"><strong>Issues:</strong> ${log.issues || ''}</td>`;
-  
-            if (log.partsRequired && log.partsRequired.length > 0) {
-              const partsRow = dataTableBody.insertRow();
-              partsRow.innerHTML = `<td colspan="14" class="p-0">
-                  <div class="table-container">
-                      <table class="data-table w-full">
-                          <thead>
-                              <tr>
-                                  <th class="w-10">S.No.</th>
-                                  <th class="w-48">Part Name</th>
-                                  <th class="w-32">Part No.</th>
-                                  <th class="w-16">QTY</th>
-                                  <th class="w-24">Parts Availability</th>
-                                  <th class="w-24">Order Date</th>
-                                  <th class="w-24">Parts Status</th>
-                                  <th class="w-48">Remarks</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              ${log.partsRequired.map((part, partIndex) => `
-                                  <tr>
-                                      <td>${partIndex + 1}.</td>
-                                      <td>${part.name}</td>
-                                      <td>${part.partNo || 'N/A'}</td>
-                                      <td>${part.quantity}</td>
-                                      <td>${part.availability}</td>
-                                      <td>${part.orderDate || 'N/A'}</td>
-                                      <td>${part.status}</td>
-                                      <td>${part.remarks || 'N/A'}</td>
-                                  </tr>
-                              `).join('')}
-                          </tbody>
-                      </table>
-                  </div>
-              </td>`;
-            }
           });
         }
   
@@ -525,7 +361,6 @@ Index.html
             partsTableBody.innerHTML = '';
             partCounter = 1;
             editingIndex = -1;
-            totalHoursContainer.classList.add('hidden');
         });
   
         viewDataBtn.addEventListener('click', () => {
@@ -534,7 +369,7 @@ Index.html
           logEntriesContainer.classList.add('hidden');
           tableView.classList.remove('hidden');
           viewDataBtn.classList.add('hidden');
-          searchBar.value = '';
+          searchBar.classList.add('hidden');
           renderTable();
         });
   
@@ -544,6 +379,7 @@ Index.html
           logEntriesContainer.classList.remove('hidden');
           tableView.classList.add('hidden');
           viewDataBtn.classList.remove('hidden');
+          searchBar.classList.remove('hidden');
           searchBar.value = '';
           renderLogs();
         });
@@ -557,7 +393,7 @@ Index.html
             (log.registrationNo && log.registrationNo.toLowerCase().includes(query)) ||
             (log.chassisNo && log.chassisNo.toLowerCase().includes(query))
           );
-          renderTable(filteredLogs);
+          renderLogs(filteredLogs);
         });
   
         exportExcelBtn.addEventListener('click', () => {
@@ -567,7 +403,7 @@ Index.html
             return;
           }
           let csvContent = "data:text/csv;charset=utf-8,";
-          csvContent += "Date/Time,Operator,Vehicle,Registration No,Chassis No,Shift Start,Shift End,Total Hrs,Opening KM,Closing KM,Total KM,Opening HMR,Closing HMR,Total HMR,Issues,Parts Required\n";
+          csvContent += "Date/Time,Operator,Vehicle,Registration No,Chassis No,Shift Start,Shift End,Opening KM,Closing KM,Total KM,Opening HMR,Closing HMR,Total HMR,Issues,Parts Required\n";
           logs.forEach(log => {
             const partsText = log.partsRequired.map(part => `${part.name} (Part No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Status: ${part.status}`).join('; ');
             let row = [
@@ -578,7 +414,6 @@ Index.html
               `"${log.chassisNo || ''}"`,
               `"${log.shiftStart}"`,
               `"${log.shiftEnd}"`,
-              `"${log.totalHours}"`,
               log.openingKm,
               log.closingKm,
               log.totalKm,
@@ -608,12 +443,12 @@ Index.html
           }
           const { jsPDF } = window.jspdf;
           const doc = new jsPDF('l');
-          const headers = ["Date/Time", "Operator", "Vehicle No.", "Reg. No.", "Chassis No.", "Shift Start", "Shift End", "Total Hrs", "Open KM", "Close KM", "Total KM", "Open HMR", "Close HMR", "Total HMR", "Issues", "Parts Required"];
+          const headers = ["Date/Time", "Operator", "Vehicle No.", "Reg. No.", "Chassis No.", "Shift Start", "Shift End", "Open KM", "Close KM", "Total KM", "Open HMR", "Close HMR", "Total HMR", "Issues", "Parts Required"];
           const data = logs.map(log => {
             const partsText = log.partsRequired.map(part => `Part: ${part.name} (No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Status: ${part.status}`).join('; ');
             return [
               new Date(log.timestamp).toLocaleString(), log.operator, log.vehicle, log.registrationNo || '', log.chassisNo || '',
-              log.shiftStart, log.shiftEnd, log.totalHours, log.openingKm, log.closingKm, log.totalKm, log.openingHmr, log.closingHmr, log.totalHmr,
+              log.shiftStart, log.shiftEnd, log.openingKm, log.closingKm, log.totalKm, log.openingHmr, log.closingHmr, log.totalHmr,
               log.issues || '', partsText || ''
             ];
           });
@@ -645,7 +480,6 @@ Index.html
           const openingHmr = parseFloat(document.getElementById('opening-hmr').value);
           const closingHmr = parseFloat(document.getElementById('closing-hmr').value);
           const issues = document.getElementById('issues').value;
-          const totalHours = totalHoursInput.value;
           
           const partsRequired = [];
           const partRows = partsTableBody.querySelectorAll('tr');
@@ -680,7 +514,7 @@ Index.html
           const totalHmr = closingHmr - openingHmr;
   
           let logs = getLogs();
-          const logData = { operator, vehicle, registrationNo, chassisNo, shiftStart, shiftEnd, totalHours, openingKm, closingKm, totalKm, openingHmr, closingHmr, totalHmr, issues, partsRequired, timestamp: new Date().toISOString() };
+          const logData = { operator, vehicle, registrationNo, chassisNo, shiftStart, shiftEnd, openingKm, closingKm, totalKm, openingHmr, closingHmr, totalHmr, issues, partsRequired, timestamp: new Date().toISOString() };
   
           if (editingIndex !== -1) {
               logs[editingIndex] = { ...logData, timestamp: logs[editingIndex].timestamp };
