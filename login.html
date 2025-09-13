@@ -6,21 +6,104 @@ login.html
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - NTST LODNA</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* General styling for the new login page */
+        body {
+            font-family: Arial, sans-serif;
+            background: #e2e8f0;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .logo {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #312e81;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.2rem;
+            color: #4b5563;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: #4f46e5;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background: #4338ca;
+        }
+        .forgot-password {
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        .forgot-password a {
+            color: #4f46e5;
+            text-decoration: none;
+        }
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="container max-w-sm mx-auto p-8 bg-white rounded-xl shadow-lg">
-        <h1 class="text-3xl font-extrabold text-center mb-6 text-indigo-700">Login</h1>
-        <form id="login-form" class="space-y-6">
+    <div class="login-container">
+        <img src="41720.jpg" alt="DEV GROUP DHANBAD Logo" class="logo mx-auto">
+        <h1>Welcome Back</h1>
+        <h2>Sign in to your account</h2>
+        <form id="login-form">
             <div class="form-group">
-                <label for="username" class="text-sm font-medium text-gray-700">User ID</label>
-                <input type="text" id="username" name="username" placeholder="lodna_dev" required>
+                <label for="username">User ID</label>
+                <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
-                <label for="password" class="text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" placeholder="lodna@123" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn-primary w-full">Login</button>
+            <button type="submit" class="btn-primary">Login</button>
         </form>
+        <div class="forgot-password">
+            <a href="#" id="forgot-password-link">Reset/Forgotten User ID or Password</a>
+        </div>
     </div>
     <script>
         document.getElementById('login-form').addEventListener('submit', function(event) {
@@ -33,6 +116,10 @@ login.html
             } else {
                 alert('Incorrect User ID or Password.');
             }
+        });
+        document.getElementById('forgot-password-link').addEventListener('click', function(event) {
+            event.preventDefault();
+            alert('This feature is not yet available. Please contact the administrator to reset your User ID or Password.');
         });
     </script>
 </body>
