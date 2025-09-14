@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Operation Log</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+
+  <h1 class="text-2xl font-bold mb-6">Vehicle Operation Log</h1>
+
+  <form id="log-form" class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block font-medium">Operator</label>
+        <input type="text" id="operator" class="w-full p-2 border rounded" required>
+      </div>
+      <div>
+        <label class="block font-medium">Vehicle</label>
+        <input type="text" id="vehicle" class="w-full p-2 border rounded" required>
+      </div>
+      <div>
+        <label class="block font-medium">Registration No</label>
+        <input type="text" id="registration-no" class="w-full p-2 border rounded">
+      </div>
+      <div>
+        <label class="block font-medium">Chassis No</label>
+        <input type="text" id="chassis-no" class="w-full p-2 border rounded">
+      </div>
+      <div>
+        <label class="block font-medium">Shift Start</label>
+        <input type="time" id="shift-start" class="w-full p-2 border rounded" required>
+      </div>
+      <div>
+        <label class="block font-medium">Shift End</label>
+        <input type="time" id="shift-end" class="w-full p-2 border rounded" required>
+      </div>
+      <div>
+        <label class="block font-medium">Opening KM</label>
+        <input type="number" id="opening-km" class="w-full p-2 border rounded" required>
+      </div>
+      <div>
+        <label class="block font-medium">Closing KM</label>
+        <input type="number" id="closing-km" class="w-full p-2 border rounded" required>
+      </div>
+      <div>
+        <label class="block font-medium">Opening HMR</label>
+        <input type="number" id="opening-hmr" class="w-full p-2 border rounded" required>
+      </div>
+      <div>
+        <label class="block font-medium">Closing HMR</label>
+        <input type="number" id="closing-hmr" class="w-full p-2 border rounded" required>
+      </div>
+      <div class="md:col-span-2">
+        <label class="block font-medium">Breakdown / Issues</label>
+        <textarea id="issues" class="w-full p-2 border rounded"></textarea>
+      </div>
+    </div>
+
+    <h2 class="text-lg font-semibold mt-6 mb-2">Parts Required</h2>
+    <table class="w-full border mb-4">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="p-2 border">Sl No</th>
+          <th class="p-2 border">Part Name</th>
+          <th class="p-2 border">Part No</th>
+          <th class="p-2 border">Qty</th>
+          <th class="p-2 border">Availability</th>
+          <th class="p-2 border">Order Date</th>
+          <th class="p-2 border">Status</th>
+          <th class="p-2 border">Remarks</th>
+          <th class="p-2 border">Action</th>
+        </tr>
+      </thead>
+      <tbody id="parts-table-body"></tbody>
+    </table>
+    <button type="button" id="add-part" class="bg-blue-500 text-white px-4 py-2 rounded">+ Add Part</button>
+
+    <div class="mt-6">
+      <button type="submit" class="bg-green-500 text-white px-6 py-2 rounded">Save Log</button>
+      <button type="button" id="export-csv" class="bg-indigo-500 text-white px-6 py-2 rounded ml-2">Export CSV</button>
+      <button type="button" id="export-pdf" class="bg-red-500 text-white px-6 py-2 rounded ml-2">Export PDF</button>
+    </div>
+  </form>
+
+  <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-6xl overflow-x-auto">
+    <h2 class="text-lg font-semibold mb-4">Log Entries</h2>
+    <table class="w-full border text-sm">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="p-2 border">Operator</th>
+          <th class="p-2 border">Vehicle</th>
+          <th class="p-2 border">Reg No</th>
+          <th class="p-2 border">Chassis</th>
+          <th class="p-2 border">Shift</th>
+          <th class="p-2 border">Hours</th>
+          <th class="p-2 border">KM (O/C/T)</th>
+          <th class="p-2 border">HMR (O/C/T)</th>
+          <th class="p-2 border">Issues</th>
+          <th class="p-2 border">Parts</th>
+          <th class="p-2 border">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="log-entries"></tbody>
+    </table>
+  </div>
+
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+    <div class="bg-white p-6 rounded shadow-lg w-96 text-center">
+      <p id="modal-message" class="mb-4"></p>
+      <button id="modal-close" class="bg-blue-500 text-white px-4 py-2 rounded">OK</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const logForm = document.getElementById('log-form');
+    const partsTableBody = document.getElementById('parts-table-body');
+    const addPartBtn = document.getElementById('add-part');
+    const logEntries = document.getElementById('log-entries');
+    const modal = document.getElementById('modal');
+    const modalMessage = document.getElementById('modal-message');
+    const modalClose = document.getElementById('modal-close');
+    let editingIndex = -1;
+
+    const showModal = (message) => {
+      modalMessage.textContent = message;
+      modal.classList.remove('hidden');
+    };
+    modalClose.addEventListener('click', () => modal.classList.add('hidden'));
+
+    const getLogs = () => JSON.parse(localStorage.getItem('logs') || '[]');
+    const saveLogs = (logs) => localStorage.setItem('logs', JSON.stringify(logs));
+
+    const renderLogs = () => {
+      const logs = getLogs();
+      logEntries.innerHTML = '';
+      logs.forEach((log, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="border p-2">${log.operator}</td>
+          <td class="border p-2">${log.vehicle}</td>
+          <td class="border p-2">${log.registrationNo}</td>
+          <td class="border p-2">${log.chassisNo}</td>
+          <td class="border p-2">${log.shiftStart} - ${log.shiftEnd}</td>
+          <td class="border p-2">${log.totalHours}</td>
+          <td class="border p-2">${log.openingKm} / ${log.closingKm} / ${log.totalKm}</td>
+          <td class="border p-2">${log.openingHmr} / ${log.closingHmr} / ${log.totalHmr}</td>
+          <td class="border p-2">${log.issues}</td>
+          <td class="border p-2">${log.partsRequired.map(p => p.name + " (" + p.quantity + ")").join(', ')}</td>
+          <td class="border p-2">
+            <button class="bg-yellow-500 text-white px-2 py-1 rounded" onclick="editLog(${index})">Edit</button>
+            <button class="bg-red-500 text-white px-2 py-1 rounded" onclick="deleteLog(${index})">Delete</button>
+          </td>
+        `;
+        logEntries.appendChild(row);
+      });
+    };
+
+    const addPartRow = (part = {}) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="border p-2">${partsTableBody.children.length + 1}</td>
+        <td class="border p-2"><input type="text" value="${part.name || ''}" class="w-full part-name-input"></td>
+        <td class="border p-2"><input type="text" value="${part.partNo || ''}" class="w-full part-partno-input"></td>
+        <td class="border p-2"><input type="number" value="${part.quantity || ''}" class="w-full part-quantity-input"></td>
+        <td class="border p-2"><input type="text" value="${part.availability || ''}" class="w-full part-availability-input"></td>
+        <td class="border p-2"><input type="date" value="${part.orderDate || ''}" class="w-full part-orderdate-input"></td>
+        <td class="border p-2"><input type="text" value="${part.status || ''}" class="w-full part-status-input"></td>
+        <td class="border p-2"><input type="text" value="${part.remarks || ''}" class="w-full part-remarks-input"></td>
+        <td class="border p-2"><button type="button" class="bg-red-500 text-white px-2 py-1 rounded" onclick="this.closest('tr').remove()">Remove</button></td>
+      `;
+      partsTableBody.appendChild(row);
+    };
+    addPartBtn.addEventListener('click', () => addPartRow());
+
+    logForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const operator = document.getElementById('operator').value;
+      const vehicle = document.getElementById('vehicle').value;
+      const registrationNo = document.getElementById('registration-no').value;
+      const chassisNo = document.getElementById('chassis-no').value;
+      const shiftStart = document.getElementById('shift-start').value;
+      const shiftEnd = document.getElementById('shift-end').value;
+      const openingKm = parseFloat(document.getElementById('opening-km').value);
+      const closingKm = parseFloat(document.getElementById('closing-km').value);
+      const openingHmr = parseFloat(document.getElementById('opening-hmr').value);
+      const closingHmr = parseFloat(document.getElementById('closing-hmr').value);
+      const issues = document.getElementById('issues').value;
+
+      // ✅ Auto calculate shift hours
+      let totalHours = "N/A";
+      if (shiftStart && shiftEnd) {
+        const start = new Date(`1970-01-01T${shiftStart}:00`);
+        const end = new Date(`1970-01-01T${shiftEnd}:00`);
+        let diff = (end - start) / (1000 * 60 * 60);
+        if (diff < 0) {
+          diff += 24;
+        }
+        totalHours = diff.toFixed(2);
+      }
+
+      const partsRequired = [];
+      const partRows = partsTableBody.querySelectorAll('tr');
+      partRows.forEach(row => {
+        const partName = row.querySelector('.part-name-input').value;
+        const partNo = row.querySelector('.part-partno-input').value;
+        const quantity = parseInt(row.querySelector('.part-quantity-input').value, 10);
+        const availability = row.querySelector('.part-availability-input').value;
+        const orderDate = row.querySelector('.part-orderdate-input').value;
+        const status = row.querySelector('.part-status-input').value;
+        const remarks = row.querySelector('.part-remarks-input').value;
+        if (partName && quantity) {
+          partsRequired.push({ name: partName, partNo, quantity, availability, orderDate, status, remarks });
+        }
+      });
+
+      if (!operator || !vehicle || !shiftStart || !shiftEnd || isNaN(openingKm) || isNaN(closingKm) || isNaN(openingHmr) || isNaN(closingHmr)) {
+        showModal("Please fill out all required fields.");
+        return;
+      }
+
+      if (closingKm < openingKm) {
+        showModal("Closing KM cannot be less than Opening KM.");
+        return;
+      }
+      if (closingHmr < openingHmr) {
+        showModal("Closing HMR cannot be less than Opening HMR.");
+        return;
+      }
+
+      const totalKm = closingKm - openingKm;
+      const totalHmr = closingHmr - openingHmr;
+
+      let logs = getLogs();
+      const logData = { operator, vehicle, registrationNo, chassisNo, shiftStart, shiftEnd, totalHours, openingKm, closingKm, totalKm, openingHmr, closingHmr, totalHmr, issues, partsRequired, timestamp: new Date().toISOString() };
+
+      if (editingIndex !== -1) {
+        logs[editingIndex] = { ...logData, timestamp: logs[editingIndex].timestamp };
+        editingIndex = -1;
+      } else {
+        logs.push(logData);
+      }
+
+      saveLogs(logs);
+      logForm.reset();
+      partsTableBody.innerHTML = "";
+      renderLogs();
+      showModal("Log entry saved successfully!");
+    });
+
+    window.editLog = (index) => {
+      const logs = getLogs();
+      const log = logs[index];
+      const logTime = new Date(log.timestamp);
+      const now = new Date();
+      const diffMinutes = (now - logTime) / (1000 * 60);
+
+      if (diffMinutes > 30) {
+        showModal("Editing allowed only within 30 minutes of entry.");
+        return;
+      }
+
+      document.getElementById('operator').value = log.operator;
+      document.getElementById('vehicle').value = log.vehicle;
+      document.getElementById('registration-no').value = log.registrationNo;
+      document.getElementById('chassis-no').value = log.chassisNo;
+      document.getElementById('shift-start').value = log.shiftStart;
+      document.getElementById('shift-end').value = log.shiftEnd;
+      document.getElementById('opening-km').value = log.openingKm;
+      document.getElementById('closing-km').value = log.closingKm;
+      document.getElementById('opening-hmr').value = log.openingHmr;
+      document.getElementById('closing-hmr').value = log.closingHmr;
+      document.getElementById('issues').value = log.issues;
+
+      partsTableBody.innerHTML = '';
+      log.partsRequired.forEach(part => addPartRow(part));
+
+      editingIndex = index;
+    };
+
+    window.deleteLog = (index) => {
+      let logs = getLogs();
+      logs.splice(index, 1);
+      saveLogs(logs);
+      renderLogs();
+    };
+
+    document.getElementById('export-csv').addEventListener('click', () => {
+      const logs = getLogs();
+      let csv = "Operator,Vehicle,Reg No,Chassis,Shift,Hours,Opening Km,Closing Km,Total Km,Opening Hmr,Closing Hmr,Total Hmr,Issues,Parts\n";
+      logs.forEach(log => {
+        csv += `"${log.operator}","${log.vehicle}","${log.registrationNo}","${log.chassisNo}","${log.shiftStart} - ${log.shiftEnd}","${log.totalHours}","${log.openingKm}","${log.closingKm}","${log.totalKm}","${log.openingHmr}","${log.closingHmr}","${log.totalHmr}","${log.issues.replace(/"/g, '""')}","${log.partsRequired.map(p => p.name + '(' + p.quantity + ')').join('; ')}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'logs.csv';
+      a.click();
+    });
+
+    document.getElementById('export-pdf').addEventListener('click', () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(12);
+      doc.text("Vehicle Operation Logs", 14, 16);
+      const logs = getLogs();
+      let y = 24;
+      logs.forEach((log, index) => {
+        doc.text(`Log #${index + 1}`, 14, y);
+        y += 6;
+        doc.text(`Operator: ${log.operator}`, 14, y); y += 6;
+        doc.text(`Vehicle: ${log.vehicle}`, 14, y); y += 6;
+        doc.text(`Shift: ${log.shiftStart} - ${log.shiftEnd} (${log.totalHours} hrs)`, 14, y); y += 6;
+        doc.text(`KM: ${log.openingKm} -> ${log.closingKm} (Total: ${log.totalKm})`, 14, y); y += 6;
+        doc.text(`HMR: ${log.openingHmr} -> ${log.closingHmr} (Total: ${log.totalHmr})`, 14, y); y += 6;
+        doc.text(`Issues: ${log.issues}`, 14, y); y += 6;
+        if (log.partsRequired.length > 0) {
+          doc
