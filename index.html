@@ -1,4 +1,4 @@
-index.html
+New update index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -139,6 +139,7 @@ index.html
                 <th>Chassis No.</th>
                 <th>Shift Start</th>
                 <th>Shift End</th>
+                <th>Total Hrs</th>
                 <th>Opening KM</th>
                 <th>Closing KM</th>
                 <th>Total KM</th>
@@ -172,7 +173,9 @@ index.html
         if (siteName) {
             document.getElementById('site-title').textContent = `${siteName} Data Entry`;
         } else {
-            document.getElementById('site-title').textContent = "Please select a site from the menu.";
+            // If no site is selected, redirect to the site selection page
+            window.location.href = 'sites.html';
+            return;
         }
         const logForm = document.getElementById('log-form');
         const logEntriesContainer = document.getElementById('log-entries');
@@ -192,7 +195,7 @@ index.html
   
         let partCounter = 1;
         let editingIndex = -1;
-        const storageKey = `dumpTruckLogs-${siteName}`;
+        const storageKey = `dumpTruckLogs-${siteName.replace(/ /g, '-')}`;
   
         function showModal(message) {
           modalMessage.textContent = message;
@@ -232,6 +235,7 @@ index.html
               <p><strong>Chassis No:</strong> ${log.chassisNo || 'N/A'}</p>
               <p><strong>Shift Start:</strong> ${log.shiftStart}</p>
               <p><strong>Shift End:</strong> ${log.shiftEnd}</p>
+              <p><strong>Total Hours:</strong> ${log.totalHours}</p>
               <p><strong>Opening KM:</strong> ${log.openingKm}</p>
               <p><strong>Closing KM:</strong> ${log.closingKm}</p>
               <p><strong>Total KM:</strong> ${log.totalKm}</p>
@@ -311,7 +315,7 @@ index.html
             return;
           }
           logs.forEach(log => {
-            const partsText = log.partsRequired.map(part => `Part: ${part.name} (Part No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Status: ${part.status}`).join('; ');
+            const partsText = log.partsRequired.map(part => `Part: ${part.name} (No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Status: ${part.status}`).join('; ');
             const row = dataTableBody.insertRow();
             row.innerHTML = `
               <td>${new Date(log.timestamp).toLocaleString()}</td>
@@ -321,6 +325,7 @@ index.html
               <td>${log.chassisNo || ''}</td>
               <td>${log.shiftStart}</td>
               <td>${log.shiftEnd}</td>
+              <td>${log.totalHours}</td>
               <td>${log.openingKm}</td>
               <td>${log.closingKm}</td>
               <td>${log.totalKm}</td>
@@ -403,7 +408,7 @@ index.html
             return;
           }
           let csvContent = "data:text/csv;charset=utf-8,";
-          csvContent += "Date/Time,Operator,Vehicle,Registration No,Chassis No,Shift Start,Shift End,Opening KM,Closing KM,Total KM,Opening HMR,Closing HMR,Total HMR,Issues,Parts Required\n";
+          csvContent += "Date/Time,Operator,Vehicle,Registration No,Chassis No,Shift Start,Shift End,Total Hrs,Opening KM,Closing KM,Total KM,Opening HMR,Closing HMR,Total HMR,Issues,Parts Required\n";
           logs.forEach(log => {
             const partsText = log.partsRequired.map(part => `${part.name} (Part No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Status: ${part.status}`).join('; ');
             let row = [
@@ -414,6 +419,7 @@ index.html
               `"${log.chassisNo || ''}"`,
               `"${log.shiftStart}"`,
               `"${log.shiftEnd}"`,
+              `"${log.totalHours}"`,
               log.openingKm,
               log.closingKm,
               log.totalKm,
@@ -443,12 +449,12 @@ index.html
           }
           const { jsPDF } = window.jspdf;
           const doc = new jsPDF('l');
-          const headers = ["Date/Time", "Operator", "Vehicle No.", "Reg. No.", "Chassis No.", "Shift Start", "Shift End", "Open KM", "Close KM", "Total KM", "Open HMR", "Close HMR", "Total HMR", "Issues", "Parts Required"];
+          const headers = ["Date/Time", "Operator", "Vehicle No.", "Reg. No.", "Chassis No.", "Shift Start", "Shift End", "Total Hrs", "Open KM", "Close KM", "Total KM", "Open HMR", "Close HMR", "Total HMR", "Issues", "Parts Required"];
           const data = logs.map(log => {
             const partsText = log.partsRequired.map(part => `Part: ${part.name} (No: ${part.partNo || 'N/A'}), Qty: ${part.quantity}, Status: ${part.status}`).join('; ');
             return [
               new Date(log.timestamp).toLocaleString(), log.operator, log.vehicle, log.registrationNo || '', log.chassisNo || '',
-              log.shiftStart, log.shiftEnd, log.openingKm, log.closingKm, log.totalKm, log.openingHmr, log.closingHmr, log.totalHmr,
+              log.shiftStart, log.shiftEnd, log.totalHours, log.openingKm, log.closingKm, log.totalKm, log.openingHmr, log.closingHmr, log.totalHmr,
               log.issues || '', partsText || ''
             ];
           });
@@ -480,6 +486,7 @@ index.html
           const openingHmr = parseFloat(document.getElementById('opening-hmr').value);
           const closingHmr = parseFloat(document.getElementById('closing-hmr').value);
           const issues = document.getElementById('issues').value;
+          const totalHours = "N/A";
           
           const partsRequired = [];
           const partRows = partsTableBody.querySelectorAll('tr');
@@ -514,7 +521,7 @@ index.html
           const totalHmr = closingHmr - openingHmr;
   
           let logs = getLogs();
-          const logData = { operator, vehicle, registrationNo, chassisNo, shiftStart, shiftEnd, openingKm, closingKm, totalKm, openingHmr, closingHmr, totalHmr, issues, partsRequired, timestamp: new Date().toISOString() };
+          const logData = { operator, vehicle, registrationNo, chassisNo, shiftStart, shiftEnd, totalHours, openingKm, closingKm, totalKm, openingHmr, closingHmr, totalHmr, issues, partsRequired, timestamp: new Date().toISOString() };
   
           if (editingIndex !== -1) {
               logs[editingIndex] = { ...logData, timestamp: logs[editingIndex].timestamp };

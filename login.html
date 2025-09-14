@@ -1,4 +1,4 @@
-login.html
+New update login.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,11 +13,11 @@ login.html
         <form id="login-form" class="space-y-6">
             <div class="form-group">
                 <label for="username" class="text-sm font-medium text-gray-700">User ID</label>
-                <input type="text" id="username" name="username" placeholder="lodna_dev" required>
+                <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
-                <label for="password" class="text-sm font-medium text-gray-700">Password</label>
-                <input type="password" id="password" name="password" placeholder="lodna@123" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
             </div>
             <button type="submit" class="btn-primary w-full">Login</button>
         </form>
@@ -27,7 +27,9 @@ login.html
             event.preventDefault();
             const usernameInput = document.getElementById('username').value;
             const passwordInput = document.getElementById('password').value;
-            if (usernameInput === 'lodna_dev' && passwordInput === 'lodna@123') {
+            
+            // NOTE: The credentials are hardcoded for now. We will use a database later.
+            if (usernameInput === 'Kunal6025' && passwordInput === 'Kunal@6025') {
                 localStorage.setItem('isAuthenticated', 'true');
                 window.location.href = 'sites.html';
             } else {
