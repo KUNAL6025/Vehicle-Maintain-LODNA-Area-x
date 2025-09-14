@@ -2,40 +2,40 @@ login.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - NTST LODNA</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - NTST LODNA</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="container max-w-sm mx-auto p-8 bg-white rounded-xl shadow-lg">
-        <h1 class="text-3xl font-extrabold text-center mb-6 text-indigo-700">Login</h1>
-        <form id="login-form" class="space-y-6">
-            <div class="form-group">
-                <label for="username" class="text-sm font-medium text-gray-700">User ID</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn-primary w-full">Login</button>
-        </form>
-    </div>
-    <script>
-        document.getElementById('login-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const usernameInput = document.getElementById('username').value;
-            const passwordInput = document.getElementById('password').value;
-            
-            // NOTE: The credentials are hardcoded for now. We will use a database later.
-            if (usernameInput === 'Kunal6025' && passwordInput === 'Kunal@6025') {
-                localStorage.setItem('isAuthenticated', 'true');
-                window.location.href = 'sites.html';
-            } else {
-                alert('Incorrect User ID or Password.');
-            }
-        });
-    </script>
+    <div class="container max-w-sm mx-auto p-8 bg-white rounded-xl shadow-lg">
+        <h1 class="text-3xl font-extrabold text-center mb-6 text-indigo-700">Login</h1>
+        <form id="login-form" class="space-y-6">
+            <div class="form-group">
+                <label for="username" class="text-sm font-medium text-gray-700">User ID</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn-primary w-full">Login</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('username').value;
+            const passwordInput = document.getElementById('password').value;
+            
+            // NOTE: The credentials are hardcoded for now. We will use a database later.
+            if (usernameInput === 'Kunal6025' && passwordInput === 'Kunal@6025') {
+                localStorage.setItem('isAuthenticated', 'true');
+                window.location.href = 'sites.html';
+            } else {
+                alert('Incorrect User ID or Password.');
+            }
+        });
+    </script>
 </body>
 </html>
